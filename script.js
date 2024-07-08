@@ -1,22 +1,30 @@
 // ==UserScript==
 // @name         Hide Retweets
-// @version      1.4
+// @version      1.5
 // @author       Hail
 // @match        https://x.com/*
 // ==/UserScript==
 
-function findParent(el) {
-    el = el.parentNode;
-    while (el && el.tagName != "ARTICLE") {
-        el = el.parentNode;
-    }
-    return el;
+function findArticleAncestor(el) {
+    const article = el.closest('article');
+    return article ? article.parentNode.parentNode : null;
 }
 
 function removeRetweets() {
-    [... document.getElementsByClassName("r-15zivkp")]
-        .map(findParent)
-        .forEach(el => el && el.parentElement.removeChild(el));
+    [...document.querySelectorAll(".r-15zivkp")]
+		.map(findArticleAncestor)
+		.forEach(el => el && el.parentElement.removeChild(el));
 }
 
-document.body.addEventListener("DOMNodeInserted", removeRetweets, false);
+const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+        if (mutation.addedNodes.length) {
+            removeRetweets();
+        }
+    });
+});
+
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
+});
