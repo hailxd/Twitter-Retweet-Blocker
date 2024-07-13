@@ -6,20 +6,33 @@
 // ==/UserScript==
 
 function findArticleAncestor(el) {
-    const article = el.closest('article');
-    return article ? article.parentNode.parentNode : null;
+    let current = el;
+    const maxDepth = 6;
+
+    for (let depth = 0; current && depth < maxDepth; depth++) {
+        if (current.tagName === 'ARTICLE') {
+            return current.parentNode?.parentNode || null;
+        }
+        current = current.parentNode;
+    }
+
+    return null;
 }
 
-function removeRetweets() {
-    [...document.querySelectorAll(".r-15zivkp")]
-		.map(findArticleAncestor)
-		.forEach(el => el && el.parentElement.removeChild(el));
+function removeRetweets(nodes) {
+    nodes.forEach(node => {
+        if (node.nodeType === 1) {
+            [...node.querySelectorAll("div.r-15zivkp")]
+                .map(findArticleAncestor)
+                .forEach(el => el && el.parentElement.removeChild(el));
+        }
+    });
 }
 
 const observer = new MutationObserver(mutations => {
     mutations.forEach(mutation => {
         if (mutation.addedNodes.length) {
-            removeRetweets();
+            removeRetweets(mutation.addedNodes);
         }
     });
 });
