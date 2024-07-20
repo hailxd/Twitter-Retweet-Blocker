@@ -1,26 +1,17 @@
 // ==UserScript==
 // @name         Hide Retweets
-// @version      1.7
+// @version      1.8
 // @author       Hail
 // @match        https://x.com/*
 // ==/UserScript==
 
-function findArticleAncestor(el) {
-	if (window.location.href.includes("/status/")) return null;
-	return el.closest('div[data-testid="cellInnerDiv"]');
-}
-
-function removeRetweets() {
-    [...document.querySelectorAll(".r-15zivkp")]
-		.map(findArticleAncestor)
-		.forEach(el => {if (el) el.style.display='none'});
-}
-
 const observer = new MutationObserver(mutations => {
-	if (mutations.length > 8) removeRetweets();
+  if (!window.location.href.includes("/status/") && mutations.length > 8) {
+    document.querySelectorAll(".r-15zivkp").forEach(el => {
+      const article = el.closest('div[data-testid="cellInnerDiv"]');
+      if (article) article.style.display = 'none';
+    });
+  }
 });
 
-observer.observe(document.body, {
-    childList: true,
-    subtree: true
-});
+observer.observe(document.body, { childList: true, subtree: true });
