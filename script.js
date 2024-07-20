@@ -1,19 +1,19 @@
 // ==UserScript==
 // @name         Hide Retweets
-// @version      1.5
+// @version      1.6
 // @author       Hail
 // @match        https://x.com/*
 // ==/UserScript==
 
 function findArticleAncestor(el) {
-    if (window.location.href.includes("/status/")) return null;
-    return el.closest('div[data-testid="cellInnerDiv"]');
+	if (window.location.href.includes("/status/")) return null;
+	return el.closest('div[data-testid="cellInnerDiv"]');
 }
 
 function removeRetweets() {
     [...document.querySelectorAll(".r-15zivkp")]
 		.map(findArticleAncestor)
-		.forEach(el => el && el.remove());
+		.forEach(el => {if (el) el.remove()});
 }
 
 const observer = new MutationObserver(mutations => {
