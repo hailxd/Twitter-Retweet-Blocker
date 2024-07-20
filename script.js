@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Hide Retweets
-// @version      1.6
+// @version      1.7
 // @author       Hail
 // @match        https://x.com/*
 // ==/UserScript==
@@ -13,15 +13,11 @@ function findArticleAncestor(el) {
 function removeRetweets() {
     [...document.querySelectorAll(".r-15zivkp")]
 		.map(findArticleAncestor)
-		.forEach(el => {if (el) el.remove()});
+		.forEach(el => {if (el) el.style.display='none'});
 }
 
 const observer = new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
-        if (mutation.addedNodes.length) {
-            removeRetweets();
-        }
-    });
+	if (mutations.length > 8) removeRetweets();
 });
 
 observer.observe(document.body, {
